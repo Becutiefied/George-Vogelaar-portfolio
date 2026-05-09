@@ -1,54 +1,1036 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>George Vogelaar — Cloud & AI Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── CSS VARIABLES ─────────────────────────────────────────────── */
+:root {
+  --bg:         #070D1A;
+  --bg-card:    #0F1829;
+  --bg-alt:     #0A1220;
+  --text:       #E8EDF5;
+  --text-muted: #7A8BA0;
+  --text-dim:   #4A5A70;
+  --blue:       #3B82F6;
+  --blue-dark:  #1D4E8A;
+  --teal:       #2AA68F;
+  --teal-dark:  #1D7A6A;
+  --gold:       #C8962A;
+  --gold-light: #F0C050;
+  --silver:     #B8C0CC;
+  --border:     rgba(184,192,204,0.08);
+  --border-md:  rgba(184,192,204,0.15);
+  --radius:     12px;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Outfit', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+}
 
+/* ── AIRPLANE ANIMATION ─────────────────────────────────────────── */
+.flight-path {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  width: 100%; height: 80px;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.25;
+}
+
+.flight-path svg {
+  width: 100%; height: 100%;
+}
+
+.plane-icon {
+  position: absolute;
+  bottom: 18px;
+  left: -28px;
+  font-size: 16px;
+  animation: fly-across 6s linear infinite;
+  transform-origin: center;
+  filter: drop-shadow(0 0 4px rgba(200,150,42,0.6));
+}
+
+@keyframes fly-across {
+  0%   { left: -28px;   bottom: 28px; opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { left: calc(100% + 10px); bottom: 14px; opacity: 0; }
+}
+
+@keyframes dash-move {
+  to { stroke-dashoffset: -40; }
+}
+/* ── RESET & BASE ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── GRAIN OVERLAY ──────────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999; opacity: 0.4;
+}
+
+/* ── CARTOGRAPHIC GRID BACKGROUND ──────────────────────────────── */
+.grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+.grid-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 60% 40%, transparent 30%, var(--bg) 100%);
+}
+
+/* ── NAV ────────────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 4rem;
+  background: rgba(7,13,26,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s;
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+.nav-logo span { color: var(--gold); font-style: italic; }
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
+  background: var(--gold); transition: width 0.25s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { width: 100%; }
+.nav-cta {
+  font-size: 0.75rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; text-decoration: none;
+  padding: 0.55rem 1.25rem;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.nav-cta:hover { background: var(--gold); color: var(--bg); }
+
+/* ── HERO ───────────────────────────────────────────────────────── */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  position: relative; overflow: hidden;
+  padding: 8rem 4rem 5rem;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem; align-items: center;
+  max-width: 1200px; margin: 0 auto; width: 100%;
+}
+.hero-left { animation: fadeUp 0.9s ease both; }
+.hero-right { animation: fadeUp 0.9s 0.2s ease both; }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-mono); font-size: 0.72rem;
+  color: var(--teal); letter-spacing: 0.1em;
+  border: 1px solid rgba(42,166,143,0.3);
+  background: rgba(42,166,143,0.07);
+  padding: 0.35rem 0.9rem; border-radius: 99px;
+  margin-bottom: 1.5rem;
+}
+.hero-badge::before { content: '●'; font-size: 0.5rem; animation: blink 2s infinite; }
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+.hero-name em {
+  font-style: italic; color: var(--gold);
+  display: block;
+}
+.hero-role {
+  font-family: var(--font-mono); font-size: 0.85rem;
+  color: var(--text-muted); letter-spacing: 0.08em;
+  margin-bottom: 1.5rem;
+}
+.hero-desc {
+  font-size: 1rem; color: var(--text-muted);
+  max-width: 420px; line-height: 1.8;
+  margin-bottom: 2.5rem;
+}
+.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-primary {
+  padding: 0.8rem 2rem; background: var(--blue);
+  color: #fff; border-radius: 6px; text-decoration: none;
+  font-size: 0.85rem; font-weight: 500; letter-spacing: 0.05em;
+  transition: all 0.2s; border: 1px solid var(--blue);
+}
+.btn-primary:hover { background: #2563EB; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(59,130,246,0.3); }
+.btn-outline {
+  padding: 0.8rem 2rem;
+  color: var(--silver); border: 1px solid var(--border-md);
+  border-radius: 6px; text-decoration: none;
+  font-size: 0.85rem; font-weight: 500; letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+.btn-outline:hover { border-color: var(--silver); color: var(--text); }
+
+/* Hero right — profile card */
+.hero-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-md);
+  border-radius: 16px;
+  padding: 2rem;
+  position: relative;x
+  overflow: hidden;
+
+}
+.hero-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--teal), var(--gold));
+}
+.hero-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-dark), var(--teal-dark));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 2rem; color: var(--gold);
+  margin-bottom: 1rem; font-style: italic;
+  overflow: hidden;
+}
+.hero-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block; border-radius: 50%;
+}
+.hero-card-name {
+  font-family: var(--font-display); font-size: 1.4rem; font-weight: 400;
+  margin-bottom: 0.25rem;
+}
+.hero-card-title {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  color: var(--teal); margin-bottom: 1.5rem; letter-spacing: 0.08em;
+}
+.cert-list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
+.cert-badge {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  padding: 0.2rem 0.55rem; border-radius: 4px;
+  background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2);
+  color: var(--blue); letter-spacing: 0.05em;
+}
+.cert-badge.gold { background: rgba(200,150,42,0.1); border-color: rgba(200,150,42,0.2); color: var(--gold); }
+.cert-badge.teal { background: rgba(42,166,143,0.1); border-color: rgba(42,166,143,0.2); color: var(--teal); }
+.hero-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+.stat { text-align: center; }
+.stat-num {
+  font-family: var(--font-display); font-size: 1.8rem;
+  font-weight: 600; color: var(--gold); display: block;
+}
+.stat-label { font-size: 0.68rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* Coordinate decoration */
+.coords {
+  position: absolute; bottom: 1rem; right: 1.25rem;
+  font-family: var(--font-mono); font-size: 0.6rem;
+  color: var(--text-dim); letter-spacing: 0.06em;
+}
+
+/* ── SECTION SHARED ─────────────────────────────────────────────── */
+section { padding: 6rem 4rem; max-width: 1200px; margin: 0 auto; }
+.section-label {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  color: var(--gold); letter-spacing: 0.18em; text-transform: uppercase;
+  margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem;
+}
+.section-label::before { content: '//'; color: var(--text-dim); }
+.section-title {
+  font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300; line-height: 1.15; margin-bottom: 1rem;
+}
+.section-title em { font-style: italic; color: var(--blue); }
+
+/* ── Z-LAYOUT SECTIONS ──────────────────────────────────────────── */
+.z-section {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 5rem; align-items: center;
+  padding: 6rem 4rem;
+  max-width: 1200px; margin: 0 auto;
+}
+.z-section.reverse { direction: rtl; }
+.z-section.reverse > * { direction: ltr; }
+
+/* ── ABOUT SECTION ──────────────────────────────────────────────── */
+#about { background: var(--bg-alt); padding: 0; }
+#about .z-section { padding: 6rem 4rem; max-width: 1200px; margin: 0 auto; }
+
+.about-text p { color: var(--text-muted); margin-bottom: 1rem; line-height: 1.85; }
+.niche-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+.niche-tag {
+  font-size: 0.78rem; padding: 0.35rem 0.85rem;
+  border-radius: 99px; font-weight: 500;
+  background: rgba(184,192,204,0.06);
+  border: 1px solid var(--border-md);
+  color: var(--silver);
+}
+.niche-tag.highlight { background: rgba(200,150,42,0.1); border-color: rgba(200,150,42,0.25); color: var(--gold-light); }
+
+.journey-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-md);
+  border-radius: var(--radius);
+  padding: 2rem; position: relative; overflow: hidden;
+}
+.journey-card::after {
+  content: ''; position: absolute;
+  right: -20px; bottom: -20px; width: 120px; height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59,130,246,0.08), transparent 70%);
+}
+.timeline-item {
+  display: flex; gap: 1rem; margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.timeline-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.timeline-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  margin-top: 6px;
+}
+.timeline-dot.blue { background: var(--blue); box-shadow: 0 0 8px rgba(59,130,246,0.5); }
+.timeline-dot.teal { background: var(--teal); box-shadow: 0 0 8px rgba(42,166,143,0.4); }
+.timeline-dot.gold { background: var(--gold); box-shadow: 0 0 8px rgba(200,150,42,0.4); }
+.timeline-date {
+  font-family: var(--font-mono); font-size: 0.65rem;
+  color: var(--text-dim); letter-spacing: 0.08em; margin-bottom: 0.2rem;
+}
+.timeline-role { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.1rem; }
+.timeline-company { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ── SKILLS SECTION ─────────────────────────────────────────────── */
+#skills { background: var(--bg); }
+
+.skills-visual {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.skill-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.skill-card:hover { border-color: var(--border-md); transform: translateY(-2px); }
+.skill-card.span2 { grid-column: 1 / -1; }
+.skill-icon { font-size: 1.25rem; margin-bottom: 0.6rem; display: block; }
+.skill-name { font-size: 0.85rem; font-weight: 500; margin-bottom: 0.35rem; }
+.skill-bar {
+  height: 3px; background: rgba(184,192,204,0.1);
+  border-radius: 99px; overflow: hidden; margin-bottom: 0.3rem;
+}
+.skill-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--blue), var(--teal));
+}
+.skill-fill.gold { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+.skill-pct { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-dim); }
+
+/* ── PROJECTS SECTION ───────────────────────────────────────────── */
+#projects { background: var(--bg-alt); padding: 6rem 4rem; }
+#projects > .inner { max-width: 1200px; margin: 0 auto; }
+
+.projects-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem; margin-top: 3rem;
+}
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  position: relative; overflow: hidden;
+  transition: border-color 0.25s, transform 0.25s;
+  cursor: pointer;
+}
+.project-card:hover { border-color: var(--border-md); transform: translateY(-4px); }
+.project-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.project-card.blue::before { background: var(--blue); }
+.project-card.teal::before { background: var(--teal); }
+.project-card.gold::before { background: var(--gold); }
+
+.project-num {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  color: var(--text-dim); letter-spacing: 0.1em; margin-bottom: 0.75rem;
+}
+.project-name { font-family: var(--font-display); font-size: 1.3rem; font-weight: 400; margin-bottom: 0.5rem; }
+.project-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 1rem; }
+.project-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.project-tag {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  padding: 0.2rem 0.5rem; border-radius: 3px;
+  background: rgba(184,192,204,0.05);
+  border: 1px solid var(--border);
+  color: var(--text-dim); letter-spacing: 0.05em;
+}
+.project-link {
+  position: absolute; top: 1.25rem; right: 1.25rem;
+  font-family: var(--font-mono); font-size: 0.65rem;
+  color: var(--text-dim); text-decoration: none;
+  transition: color 0.2s;
+}
+.project-card:hover .project-link { color: var(--blue); }
+
+/* ── TRAVEL NICHE BANNER ────────────────────────────────────────── */
+#niche {
+  background: linear-gradient(135deg, #0A1525 0%, #0F1A2E 50%, #0A1220 100%);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 5rem 4rem; position: relative; overflow: hidden;
+}
+#niche::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(200,150,42,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,150,42,0.03) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+.niche-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+.niche-headline {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-weight: 300; line-height: 1.2;
+  margin-bottom: 2rem; text-align: center;
+}
+.niche-headline em { font-style: italic; color: var(--gold); }
+.niche-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.niche-item {
+  background: rgba(200,150,42,0.05);
+  border: 1px solid rgba(200,150,42,0.15);
+  border-radius: var(--radius);
+  padding: 1.5rem; text-align: center;
+}
+.niche-item-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+.niche-item-title { font-size: 0.9rem; font-weight: 500; color: var(--gold-light); margin-bottom: 0.35rem; }
+.niche-item-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.6; }
+
+/* ── CONTACT SECTION ────────────────────────────────────────────── */
+#contact { background: var(--bg); padding: 6rem 4rem; }
+.contact-inner { max-width: 1200px; margin: 0 auto; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-top: 3rem; align-items: start; }
+.contact-info p { color: var(--text-muted); margin-bottom: 2rem; line-height: 1.8; }
+.contact-links { display: flex; flex-direction: column; gap: 0.75rem; }
+.contact-link {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.9rem 1.25rem;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 8px; text-decoration: none; color: var(--text-muted);
+  font-size: 0.85rem; font-weight: 500; transition: all 0.2s;
+}
+.contact-link:hover { border-color: var(--blue); color: var(--text); }
+.contact-link-icon { font-size: 1rem; }
+
+/* ── FORM STYLES ────────────────────────────────────────────────── */
+.contact-form { display: flex; flex-direction: column; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.form-label {
+  font-size: 0.72rem; color: var(--text-muted);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.form-input, .form-textarea {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.85rem 1rem;
+  color: var(--text); font-family: var(--font-body); font-size: 0.9rem;
+  transition: border-color 0.2s; outline: none; resize: vertical;
+}
+.form-input:focus, .form-textarea:focus { border-color: var(--blue); }
+.form-input[aria-invalid="true"], .form-textarea[aria-invalid="true"] {
+  border-color: #f87171;
+}
+.form-textarea { min-height: 120px; }
+.form-submit {
+  padding: 0.9rem 2rem; background: var(--blue);
+  color: #fff; border: none; border-radius: 6px;
+  font-family: var(--font-body); font-size: 0.9rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; align-self: flex-start;
+  letter-spacing: 0.04em;
+}
+.form-submit:hover:not(:disabled) { background: #2563EB; transform: translateY(-1px); }
+.form-submit:disabled {
+  opacity: 0.6; cursor: not-allowed; transform: none;
+}
+
+/* Formspree feedback messages */
+.fs-success {
+  display: none;
+  background: rgba(42,166,143,0.1);
+  border: 1px solid rgba(42,166,143,0.3);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  color: var(--teal);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+.fs-error-global {
+  display: none;
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.25);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  color: #f87171;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+.fs-field-error {
+  font-size: 0.72rem;
+  color: #f87171;
+  margin-top: 0.2rem;
+  min-height: 1rem;
+  font-family: var(--font-mono);
+}
+
+/* ── FOOTER ─────────────────────────────────────────────────────── */
+footer {
+  background: var(--bg-alt);
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 4rem;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-name { font-family: var(--font-display); font-size: 1.1rem; color: var(--text-muted); }
+.footer-name span { color: var(--gold); font-style: italic; }
+.footer-mono { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim); letter-spacing: 0.1em; }
+
+/* ── ANIMATIONS ─────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SCROLLBAR ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-md); border-radius: 3px; }
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  nav { padding: 1rem 2rem; }
+  .nav-links { display: none; }
+  #hero, section, .z-section, #projects, #niche, #contact, footer { padding-left: 2rem; padding-right: 2rem; }
+  .hero-content, .z-section, .contact-grid { grid-template-columns: 1fr; }
+  .z-section.reverse { direction: ltr; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .niche-grid { grid-template-columns: 1fr 1fr; }
+  .hero-stats { grid-template-columns: 1fr 1fr 1fr; }
+  .skills-visual { grid-template-columns: 1fr; }
+}
+</style>
 </head>
-
 <body>
-  
-<h1>George Vogelaar Developer Portfolio</h1>
-<img src = images/george.jpeg alt="George Vogelaar" width="500"/>
-<h2>Web & iOS Developer</h2>
 
-<h4>I am actively working on personal projects, which are still in development. This portfolio will be continuously updated as I expand my skills and showcase new work.</h5>
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">The Travel IT <span>Specialist</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#niche">Travel Tech</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="https://github.com/Becutiefied" class="nav-cta">GitHub ↗</a>
+</nav>
 
-    <hr>
-    
-<h3>Summary about me</h3>
+<!-- HERO -->
+<div id="hero" style="position:relative;">
+  <div class="grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-badge">Available for new opportunities</div>
+      <h1 class="hero-name">
+        George<br>
+        <em>Vogelaar</em>
+      </h1>
+      <p class="hero-role">// Cloud & AI Engineer · Azure · Python · Travel Tech</p>
+      <p class="hero-desc">
+        Bridging the worlds of cloud infrastructure and artificial intelligence — 
+        with a niche in travel tech that turns technical expertise into 
+        human experiences. Ready for takeoff into the cloud?
+      </p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary">View Projects</a>
+        <a href="#contact" class="btn-outline">Get in Touch</a>
+      </div>
+    </div>
 
-<p>I am a junior developer who loves to use my creativity to build digital solutions. With my background as a system administrator, I’ve earned the nickname “the inventor”. I like to take initiative and get things done.
-I enjoy diving into challenges that don’t have a straightforward solution.</p> 
+    <div class="hero-right">
+      <div class="hero-card">
+        <div class="hero-avatar"><img src="images/george.jpeg" alt="George Vogelaar"></div>
+        <div class="hero-card-name">George Vogelaar</div>
+        <div class="hero-card-title">System Administrator → AI & Cloud Engineer</div>
+        <div class="cert-list">
+          <span class="cert-badge">AZ-104</span>
+          <span class="cert-badge">MD-102</span>
+          <span class="cert-badge">SC-300</span>
+          <span class="cert-badge">Comptia+</span>
+          <span class="cert-badge">ITIL4</span>
+          <span class="cert-badge">AZ-140</span>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-num">9+</span>
+            <span class="stat-label">Certifications</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">3+</span>
+            <span class="stat-label">Years Azure</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">2</span>
+            <span class="stat-label">Industries</span>
+          </div>
+        </div>
+        <div class="coords">Rotterdam, NL</div>
+        <!-- Airplane decoration -->
+<div class="flight-path">
+  <svg viewBox="0 0 400 80" preserveAspectRatio="none"
+       xmlns="http://www.w3.org/2000/svg">
+    <!-- Stippellijn vluchtroute -->
+    <path d="M 0 60 Q 100 40 200 50 Q 300 60 400 30"
+          fill="none"
+          stroke="#C8962A"
+          stroke-width="1"
+          stroke-dasharray="5 5"
+          style="animation: dash-move 1.2s linear infinite;" />
+    <!-- Kleine stipjes als tussenstops -->
+    <circle cx="100" cy="46" r="2" fill="#C8962A" opacity="0.4"/>
+    <circle cx="200" cy="50" r="2" fill="#C8962A" opacity="0.4"/>
+    <circle cx="300" cy="54" r="2" fill="#C8962A" opacity="0.4"/>
+  </svg>
+</div>
+<span class="plane-icon">✈</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-<p>I love figuring things out, experimenting, and improving processes.
-From writing small scripts to setting up documentation and automating tasks, I always find opportunities to make things work better. People appreciate my creative perspective.</p> 
+<!-- ABOUT — Z-1: text left, card right -->
+<div id="about">
+  <div class="z-section">
+    <div class="about-text">
+      <div class="section-label">About Me</div>
+      <h2 class="section-title">Where <em>tech</em> meets the world</h2>
+      <p>
+        I'm a cloud and infrastructure professional currently transitioning into 
+        AI engineering and software development. Based in Rotterdam, with a background 
+        that spans enterprise IT and global travel.
+      </p>
+      <p>
+        At OGD ict-diensten I manage Microsoft 365, Azure, and hybrid server environments — 
+        while building my skills in Python, FastAPI, Azure AI, and iOS development alongside.
+      </p>
+      <p>
+        My background at American Express Global Business Travel, Boutique Holland DMC, 
+        and as a tour guide gives me something most engineers don't have: deep understanding 
+        of what travellers actually need.
+      </p>
+      <div class="niche-tags">
+        <span class="niche-tag highlight">✈ Travel Tech</span>
+        <span class="niche-tag">Azure AI Agent</span>
+        <span class="niche-tag">Python / FastAPI</span>
+        <span class="niche-tag">iOS / SwiftUI</span>
+        <span class="niche-tag">Remote-First</span>
+        <span class="niche-tag">Open to relocation</span>
+      </div>
+    </div>
 
-<p>Sometimes I need to convince others why a new approach is the right one, but once I show what it delivers, they see the value.
-The nickname “the inventor” suits me well. I’m not just focused on the technical part — I also think about how things can be faster, smarter, and more enjoyable. It motivates me to see that something I create makes an immediate difference.</p>
+    <div class="journey-card">
+      <div class="section-label" style="margin-bottom:1.25rem;">Journey</div>
+      <div class="timeline-item">
+        <div class="timeline-dot blue"></div>
+        <div>
+          <div class="timeline-date">2023 – Present</div>
+          <div class="timeline-role">System Administrator</div>
+          <div class="timeline-company">OGD ict-diensten · Delft</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot gold"></div>
+        <div>
+          <div class="timeline-date">2022 – 2023</div>
+          <div class="timeline-role">Travel Counselor</div>
+          <div class="timeline-company">American Express GBT · Eindhoven</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot gold"></div>
+        <div>
+          <div class="timeline-date">2023 – 2024</div>
+          <div class="timeline-role">MSc Tourism Management</div>
+          <div class="timeline-company">Rome Business School</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot teal"></div>
+        <div>
+          <div class="timeline-date">2019 – 2022</div>
+          <div class="timeline-role">BSc Tourism & Hospitality</div>
+          <div class="timeline-company">EuroCollege Hogeschool</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<h3>Education</h3>
+<!-- SKILLS — Z-2: visual left, text right -->
+<div id="skills" style="background:var(--bg); padding: 0;">
+  <div class="z-section reverse">
+    <div class="skills-visual">
+      <div class="skill-card">
+        <span class="skill-icon">☁</span>
+        <div class="skill-name">Azure / Cloud</div>
+        <div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div>
+        <div class="skill-pct">100% — AZ-104 certified</div>
+      </div>
+      <div class="skill-card">
+        <span class="skill-icon">🐍</span>
+        <div class="skill-name">Python</div>
+        <div class="skill-bar"><div class="skill-fill" style="width:55%"></div></div>
+        <div class="skill-pct">55% — Angela Yu bootcamp</div>
+      </div>
+      <div class="skill-card">
+        <span class="skill-icon">⚡</span>
+        <div class="skill-name">Azure AI Agent</div>
+        <div class="skill-bar"><div class="skill-fill gold" style="width:30%"></div></div>
+        <div class="skill-pct">In development — AI-102</div>
+      </div>
+      <div class="skill-card">
+        <span class="skill-icon">🌐</span>
+        <div class="skill-name">Fullstack / React</div>
+        <div class="skill-bar"><div class="skill-fill" style="width:45%"></div></div>
+        <div class="skill-pct">45% — Angela Yu course</div>
+      </div>
+      <div class="skill-card">
+        <span class="skill-icon">📱</span>
+        <div class="skill-name">iOS / SwiftUI</div>
+        <div class="skill-bar"><div class="skill-fill" style="width:35%"></div></div>
+        <div class="skill-pct">35% — In progress</div>
+      </div>
+      <div class="skill-card">
+        <span class="skill-icon">🔧</span>
+        <div class="skill-name">M365 / Intune</div>
+        <div class="skill-bar"><div class="skill-fill" style="width:92%"></div></div>
+        <div class="skill-pct">100% — MD-102 certified</div>
+      </div>
+    </div>
 
-<p>Master’s in Tourism Management – Rome Business School (2023–2024)</p>
-<p>Bachelor’s in Tourism & Hospitality Management – EuroCollege Hogeschool (2019–2022)</p>
-<p>pursuing HTML and iOS development with Swift courses, building a solid foundation in front-end and mobile app development. My education and certifications complement my technical skills, reinforcing structured problem-solving, user experience design, and a drive to grow as a developer.</p>
+    <div>
+      <div class="section-label">Skills & Stack</div>
+      <h2 class="section-title">Built on <em>Azure</em>,<br>growing into AI</h2>
+      <p style="color:var(--text-muted);margin-bottom:1.5rem;line-height:1.8;">
+        A strong foundation in Microsoft enterprise environments — 
+        now extending into Python, Azure AI Agent Service, and full-stack development. 
+        9 Microsoft certifications and counting.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:0.6rem;">
+        <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.82rem;color:var(--text-muted);">
+          <span style="color:var(--blue);font-family:var(--font-mono);font-size:0.65rem;">01</span>
+          Azure · Intune · Entra ID · M365 · Hybrid Infra
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.82rem;color:var(--text-muted);">
+          <span style="color:var(--blue);font-family:var(--font-mono);font-size:0.65rem;">02</span>
+          Python · FastAPI · REST APIs · Docker · Git
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.82rem;color:var(--text-muted);">
+          <span style="color:var(--gold);font-family:var(--font-mono);font-size:0.65rem;">03</span>
+          Azure AI Agent · OpenAI API · Vector Databases
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.82rem;color:var(--text-muted);">
+          <span style="color:var(--teal);font-family:var(--font-mono);font-size:0.65rem;">04</span>
+          React · Next.js · SwiftUI · Firebase
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<h3>Work experience</h3>
+<!-- PROJECTS -->
+<div id="projects" style="background:var(--bg-alt);padding:6rem 4rem;">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-label">Projects</div>
+    <h2 class="section-title">Built with <em>purpose</em></h2>
 
-<p>With a background as a System Administrator at OGD ict-diensten, I have hands-on experience managing Microsoft 365, Azure, and hybrid server environments. I specialise in troubleshooting, automation, and delivering secure, user-friendly solutions. My previous roles in international travel and hospitality strengthened my customer focus, adaptability, and communication skills—qualities I now combine with my growing expertise in software development.</p>
+    <div class="projects-grid">
+      <div class="project-card blue">
+        <div class="project-num">01 / GitHub</div>
+        <span style="font-family:var(--font-mono);font-size:0.6rem;padding:0.2rem 0.6rem;border-radius:99px;background:rgba(200,150,42,0.12);border:1px solid rgba(200,150,42,0.3);color:var(--gold);position:absolute;top:1.25rem;right:1.25rem;">🚧 In Development</span>
+        <div class="project-name">AI Travel Planner</div>
+        <p class="project-desc">Azure AI Agent that generates personalised travel itineraries. FastAPI backend, React frontend, OpenAI integration.</p>
+        <div class="project-tags">
+          <span class="project-tag">Python</span>
+          <span class="project-tag">Azure AI Agent</span>
+          <span class="project-tag">FastAPI</span>
+          <span class="project-tag">React</span>
+        </div>
+      </div>
 
-<h3>Skills</h3>
+      <div class="project-card teal">
+        <div class="project-num">02 / GitHub</div>
+        <span style="font-family:var(--font-mono);font-size:0.6rem;padding:0.2rem 0.6rem;border-radius:99px;background:rgba(200,150,42,0.12);border:1px solid rgba(200,150,42,0.3);color:var(--gold);position:absolute;top:1.25rem;right:1.25rem;">🚧 In Development</span>
+        <div class="project-name">Smart Itinerary Generator</div>
+        <p class="project-desc">Generates exportable travel itineraries using Azure AI and Maps API. Outputs to PDF via automated pipeline.</p>
+        <div class="project-tags">
+          <span class="project-tag">Azure AI</span>
+          <span class="project-tag">Maps API</span>
+          <span class="project-tag">PDF export</span>
+        </div>
+      </div>
 
-<p>I bring a versatile skill set that bridges IT infrastructure and software development. My technical expertise includes Microsoft 365, Azure, Active Directory, Intune, and hybrid server management, along with a growing foundation in HTML and iOS development with Swift. I enjoy learning new technologies and applying them to build clean, user-friendly applications. In addition, I am experienced in troubleshooting, problem-solving, and working collaboratively—skills that help me grow quickly as a developer.</p>
+      <div class="project-card gold">
+        <div class="project-num">03 / GitHub</div>
+        <span style="font-family:var(--font-mono);font-size:0.6rem;padding:0.2rem 0.6rem;border-radius:99px;background:rgba(200,150,42,0.12);border:1px solid rgba(200,150,42,0.3);color:var(--gold);position:absolute;top:1.25rem;right:1.25rem;">🚧 In Development</span>
+        <div class="project-name">AI Concierge App</div>
+        <p class="project-desc">iOS concierge app for travellers powered by OpenAI and Firebase. Built with SwiftUI for a native experience.</p>
+        <div class="project-tags">
+          <span class="project-tag">SwiftUI</span>
+          <span class="project-tag">OpenAI API</span>
+          <span class="project-tag">Firebase</span>
+        </div>
+      </div>
 
-<h4><a href = "Contact me/contact.html">Contact me</a> </a></h4>
+      <div class="project-card blue">
+        <div class="project-num">04 / GitHub</div>
+        <span style="font-family:var(--font-mono);font-size:0.6rem;padding:0.2rem 0.6rem;border-radius:99px;background:rgba(200,150,42,0.12);border:1px solid rgba(200,150,42,0.3);color:var(--gold);position:absolute;top:1.25rem;right:1.25rem;">🚧 In Development</span>
+        <div class="project-name">Booking Workflow Automation</div>
+        <p class="project-desc">Automates travel booking workflows using Microsoft Graph API and Azure Functions. Built for enterprise scale.</p>
+        <div class="project-tags">
+          <span class="project-tag">Python</span>
+          <span class="project-tag">Graph API</span>
+          <span class="project-tag">Azure Functions</span>
+        </div>
+      </div>
+
+      <div class="project-card teal">
+        <div class="project-num">05 / GitHub</div>
+        <span style="font-family:var(--font-mono);font-size:0.6rem;padding:0.2rem 0.6rem;border-radius:99px;background:rgba(200,150,42,0.12);border:1px solid rgba(200,150,42,0.3);color:var(--gold);position:absolute;top:1.25rem;right:1.25rem;">🚧 In Development</span>
+        <div class="project-name">Hotel Analytics Dashboard</div>
+        <p class="project-desc">Real-time hotel performance analytics combining Azure data pipelines with Power BI visualisations.</p>
+        <div class="project-tags">
+          <span class="project-tag">Azure</span>
+          <span class="project-tag">Power BI</span>
+          <span class="project-tag">Python</span>
+        </div>
+      </div>
+
+      <div class="project-card gold">
+        <div class="project-num">06 / GitHub</div>
+        <span style="font-family:var(--font-mono);font-size:0.6rem;padding:0.2rem 0.6rem;border-radius:99px;background:rgba(200,150,42,0.12);border:1px solid rgba(200,150,42,0.3);color:var(--gold);position:absolute;top:1.25rem;right:1.25rem;">🚧 In Development</span>
+        <div class="project-name">AI City Guide</div>
+        <p class="project-desc">iOS city guide app using Maps and AI APIs. Delivers context-aware recommendations for travellers in real time.</p>
+        <div class="project-tags">
+          <span class="project-tag">iOS</span>
+          <span class="project-tag">Maps API</span>
+          <span class="project-tag">AI APIs</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- de vier kopjes — complementary gold section -->
+<div id="niche">
+  <div class="niche-inner">
+    <p class="section-label" style="justify-content:center;margin-bottom:1rem;">The Niche</p>
+    <h2 class="niche-headline">
+      Tech built for people<br>who <em>travel around the world</em>
+    </h2>
+    <div class="niche-grid">
+      <div class="niche-item">
+        <div class="niche-item-icon">✈</div>
+        <div class="niche-item-title">Travel Domain</div>
+        <div class="niche-item-desc">Years at Amex GBT and travel DMCs — I know what travellers actually need.</div>
+      </div>
+      <div class="niche-item">
+        <div class="niche-item-icon">🤖</div>
+        <div class="niche-item-title">AI Integration</div>
+        <div class="niche-item-desc">Azure AI Agent, OpenAI APIs and vector databases for intelligent travel experiences.</div>
+      </div>
+      <div class="niche-item">
+        <div class="niche-item-icon">☁</div>
+        <div class="niche-item-title">Cloud Scale</div>
+        <div class="niche-item-desc">Azure infrastructure that handles enterprise scale — from Mews to Booking.com level.</div>
+      </div>
+      <div class="niche-item">
+        <div class="niche-item-icon">📱</div>
+        <div class="niche-item-title">Mobile First</div>
+        <div class="niche-item-desc">iOS apps built with SwiftUI for travellers who live on their phone.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- contact information -->
+<div id="contact" style="background:var(--bg);padding:6rem 4rem;">
+  <div class="contact-inner">
+    <div class="section-label">Contact</div>
+    <h2 class="section-title">Let's <em>connect</em></h2>
+    <div class="contact-grid">
+
+      <div class="contact-info">
+        <p>Open to roles in cloud engineering, AI development, and travel tech — whether remote, hybrid, or international. Based in Rotterdam, Netherlands.</p>
+        <div class="contact-links">
+          <a href="mailto:vogelaar1997@outlook.com" class="contact-link">
+            <span class="contact-link-icon">✉</span> vogelaar1997@outlook.com
+          </a>
+          <a href="https://github.com/Becutiefied" class="contact-link">
+            <span class="contact-link-icon">⌥</span> github.com/Becutiefied
+          </a>
+          <a href="https://www.linkedin.com/in/george-vogelaar-a75585194" class="contact-link">
+            <span class="contact-link-icon">◈</span> linkedin.com/in/george-vogelaar-a75585194
+          </a>
+          <a href="#" class="contact-link">
+            <span class="contact-link-icon">◎</span> Rotterdam, Netherlands · Open to relocation for international adventures
+          </a>
+        </div>
+      </div>
+
+      <!-- ── FORMSPREE CONTACT FORM ─────────────────────────────── -->
+      <div>
+        <!-- Success message — shown after successful submission -->
+        <div class="fs-success" data-fs-success>
+          ✓ Message sent! I'll get back to you soon.
+        </div>
+
+        <!-- Global error message — shown if something goes wrong -->
+        <div class="fs-error-global" data-fs-error></div>
+
+        <form id="contact-form" class="contact-form">
+
+          <div class="form-group">
+            <label class="form-label" for="name">Name</label>
+            <input class="form-input" type="text" id="name"
+                   name="name" placeholder="Your name"
+                   data-fs-field required>
+            <span class="fs-field-error" data-fs-error="name"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input class="form-input" type="email" id="email"
+                   name="email" placeholder="your email"
+                   data-fs-field required>
+            <span class="fs-field-error" data-fs-error="email"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="message">Message</label>
+            <textarea class="form-textarea" id="message"
+                      name="message" placeholder="What is your request?"
+                      data-fs-field required></textarea>
+            <span class="fs-field-error" data-fs-error="message"></span>
+          </div>
+
+          <button type="submit" class="form-submit" data-fs-submit-btn>
+            Send Message →
+          </button>
+
+        </form>
+      </div>
+      <!-- ── END FORMSPREE FORM ──────────────────────────────────── -->
+
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-name">George <span>Vogelaar</span></div>
+  <div class="footer-mono">Rotterdam</div>
+  <div class="footer-mono">Built with HTML · CSS · Hosted on GitHub Pages</div>
+</footer>
+
+<!-- ── SCRIPTS ───────────────────────────────────────────────────── -->
+<script>
+// Nav scroll effect
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  if (window.scrollY > 60) {
+    nav.style.background = 'rgba(7,13,26,0.97)';
+    nav.style.borderBottomColor = 'rgba(184,192,204,0.12)';
+  } else {
+    nav.style.background = 'rgba(7,13,26,0.85)';
+  }
+});
+
+// Fade-in on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.project-card, .skill-card, .niche-item, .timeline-item').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
+});
+</script>
+
+<!-- Formspree Ajax — koppelt #contact-form aan jouw endpoint -->
+<script>
+  window.formspree = window.formspree || function () {
+    (formspree.q = formspree.q || []).push(arguments);
+  };
+  formspree('initForm', {
+    formElement: '#contact-form',
+    formId: 'xzdokzna'
+  });
+</script>
+<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 
 </body>
-
-<footer>
-    <p>© 2025 George Vogelaar</p>
-  </footer>
-
 </html>
