@@ -1,2 +1,2 @@
-# html-portfolio
+# Developer Portfolio
 My developer journey
