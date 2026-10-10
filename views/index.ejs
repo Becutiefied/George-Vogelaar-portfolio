@@ -1,0 +1,35 @@
+<%- include("partials/header.ejs") %>
+
+<h1>Blog Web Application</h1>
+
+<section class="card">
+  <h2>New post</h2>
+  <form action="/posts" method="POST">
+    <input type="text" name="title" placeholder="Title" aria-label="Title" required>
+    <textarea name="content" placeholder="Amuse me with your post..." aria-label="Post content" rows="5" required></textarea>
+    <button type="submit">Publish</button>
+  </form>
+</section>
+
+<section class="posts">
+  <% if (posts.length === 0) { %>
+    <p class="empty">No posts yet. Write the first one above.</p>
+  <% } %>
+
+  <% posts.forEach((post) => { %>
+    <article class="card">
+      <h2><%= post.title %></h2>
+      <small><%= post.createdAt.toLocaleString('nl-NL') %></small>
+      <p><%= post.content %></p>
+      <div class="actions">
+        <a class="button" href="/posts/<%= post.id %>/edit">Edit</a>
+        <form action="/posts/<%= post.id %>/delete" method="POST"
+              onsubmit="return confirm('Delete this post?')">
+          <button type="submit" class="danger">Delete</button>
+        </form>
+      </div>
+    </article>
+  <% }) %>
+</section>
+
+<%- include("partials/footer.ejs") %>
